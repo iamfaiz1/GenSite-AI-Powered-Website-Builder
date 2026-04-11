@@ -25,7 +25,24 @@ export const googleAuth = async (req, res)=>{
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days 
         })
 
+        return res.status(200).json(user);
+
     } catch(error){
-        res.status(500).json({message: 'Internal Server Error'});
+        res.status(500).json({message: `Google Auth Error: ${error.message}`});
     }
 }
+
+
+// Logout user
+export const logOut = async (req, res) => {
+    try {
+        return res.clearCookie('token',{
+            httpOnly: true,
+            secure: false, // Set to true in production 
+            sameSite: 'strict'
+        })
+        
+    } catch (error) {
+        res.status(500).json({ message: `Logout Error: ${error.message}` });
+    }
+};
