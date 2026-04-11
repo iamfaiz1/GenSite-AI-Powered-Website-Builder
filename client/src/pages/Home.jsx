@@ -1,13 +1,28 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import React, { useState } from 'react'
+import { motion} from 'framer-motion'
+import LoginModel from '../components/LoginModel'
 
 function Home() {
     const highlights = [
-        "AI Generated Code",
-        "Fully Responsive Design",
-        "Production ready Output",
-        "Customizable Templates"
+        {
+            title: "AI Generated Code",
+            description: "Leverage advanced AI to generate clean, efficient, and modern code tailored to your specifications, accelerating your development workflow."
+        },
+        {
+            title: "Fully Responsive Design",
+            description: "Ensure your website looks perfect on any device, from desktops to mobile phones, with automatically generated responsive layouts."
+        },
+        {
+            title: "Production-Ready Output",
+            description: "Receive high-quality, optimized code that's ready for deployment, meeting industry standards and best practices."
+        },
+        {
+            title: "Customizable Templates",
+            description: "Start with a diverse library of professionally designed templates and easily customize them to match your brand and vision."
+        }
     ]
+    const [openLogin, setOpenLogin] = useState(false)
+    
 
     return (
         <div className='relative min-h-screen bg-black text-white overflow-hidden'>
@@ -27,7 +42,9 @@ function Home() {
                         <div className='hidden md:inline text-sm text-zinc-400 hover:text-white cursor-pointer'>
                            Pricing  
                         </div>
-                        <button className='px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-sm'>
+                        <button className='px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-sm'
+                        onClick={() => setOpenLogin(true)}
+                        >
                             Get Started
                         </button>
                     </div>
@@ -36,7 +53,6 @@ function Home() {
 
             {/* Hero Section */}
             <section className='pt-44 pb-32 px-6 text-center'>
-                
                 <div className='max-w-4xl mx-auto'>
 
                     <motion.h1 
@@ -46,7 +62,7 @@ function Home() {
                         transition={{duration:0.5, delay:0.4}}
                     >
                         Build Stunning Websites <br />
-                        <span className='bg-gradient-to-r from-green-400 to-violet-600 bg-clip-text text-transparent'>
+                        <span className='bg-linear-to-r from-green-400 to-violet-600 bg-clip-text text-transparent'>
                             with AI
                         </span>
                     </motion.h1>
@@ -65,33 +81,42 @@ function Home() {
                     </button>
 
                 </div>
+            </section>
 
-                {/* Cards Section */}
-                <section className='max-w-7xl mx-auto px-6 pb-20 mt-16'>
-                    
-                    <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
-                        
-                        {highlights.map((h, i)=>(
-                            <motion.div
-                                key={i}
-                                initial={{opacity:0, y:40}}
-                                whileInView={{opacity:1, y:0}}
-                                transition={{duration:0.5}}
-                                className="p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-lg hover:bg-white/10 transition"
-                            >  
-                                <h1 className='text-lg font-semibold mb-2'>{h}</h1>
-                                
-                                <p className='text-sm text-zinc-400 leading-relaxed'>
-                                    Effortlessly transform your ideas into professional, responsive websites in seconds using our intuitive AI-powered platform.
-                                </p>
-                            </motion.div>
-                        ))} 
+            {/* Cards Section */}
+            <section className='max-w-7xl mx-auto px-6 pb-20 mt-16'>
+                
+                <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
+                    {highlights.map((h, i)=>(
+                        <motion.div 
+                            key={h.title}
+                            initial={{opacity:0, y:40}}
+                            whileInView={{opacity:1, y:0}}
+                            transition={{duration:0.5}}
+                            viewport={{once:true}}
+                            className="p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-lg hover:bg-white/10 transition"
+                        >
+                            <h1 className='text-lg font-semibold mb-2'>{h.title}</h1>
+                            
+                            <p className='text-sm text-zinc-400 leading-relaxed'>
+                                {h.description}
+                            </p>
+                        </motion.div>
+                    ))} 
 
-                    </div>
-
-                </section>
+                </div>
 
             </section>
+
+
+            {/* footer */}
+            <footer className='border-t border-white/10 py-14 text-center text-sm text-zinc-500'>
+                &copy; {new Date().getFullYear()} GenSite.ai. All rights reserved.
+            </footer>
+
+            {/* Login Model rendering*/}
+            {openLogin && <LoginModel open={openLogin} onClose={setOpenLogin} />}
+            
 
         </div>
     )
