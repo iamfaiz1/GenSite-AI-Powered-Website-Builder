@@ -76,7 +76,9 @@ function Home() {
                         Transform ideas into stunning responsive websites in seconds. No coding, just creativity.
                     </motion.p>
 
-                    <button className='mt-12 px-10 py-3 rounded-lg bg-white border text-black text-lg font-semibold transition duration-300 hover:scale-105 hover:bg-gray-100'>
+                    <button 
+                    onClick={() => setOpenLogin(true)}
+                    className='mt-12 px-10 py-3 rounded-lg bg-white border text-black text-lg font-semibold transition duration-300 hover:scale-105 hover:bg-gray-100'>
                         Get started
                     </button>
 
