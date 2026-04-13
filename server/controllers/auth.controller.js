@@ -7,16 +7,21 @@ dotenv.config();
 export const googleAuth = async (req, res)=>{
     try{
         const {name , email, avatar} = req.body;
+        console.log("Incoming:", name, email, avatar);
+
         if(!email){
             return res.status(400).json({message: 'Email is required'});
         }
 
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
+        console.log("User found:", user);
+
         if(!user){
-            const user = await User.create({ name, email, avatar });
+            console.log('creating new user...');
+            user = await User.create({ name, email, avatar });
         }
         const token = await jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
-
+        console.log('final user:', user);
         // fix before production
         res.cookie('token', token, {
             httpOnly: true,

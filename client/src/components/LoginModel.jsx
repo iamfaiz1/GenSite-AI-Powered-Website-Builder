@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from '../firebase';
 import { useState } from 'react';
+import axios from 'axios';
+import { serverUrl } from '../App';
 
 
 function LoginModel({ open, onClose }) {
@@ -14,7 +16,14 @@ function LoginModel({ open, onClose }) {
         try {
             setIsLoading(true);
             const result = await signInWithPopup(auth, provider);
-            console.log("Successfully logged in:", result.user);
+            const {data} = await axios.post(`${serverUrl}/api/auth/google`, {
+                name:result.user.displayName,
+                email:result.user.email,
+                avatar:result.user.photoURL
+
+            },{withCredentials:true});
+            console.log("Login successful:", data);
+
             onClose(false); // Only close the modal on success
 
         } catch (error) {
@@ -42,10 +51,10 @@ function LoginModel({ open, onClose }) {
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.92, opacity: 0, y: 15 }}
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className='w-full max-w-[380px]'
+                        className='w-full max-w-95'
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className='relative overflow-hidden rounded-xl w-full max-w-[380px] bg-[#0f0f0f] border border-white/10 shadow-2xl p-7'>
+                        <div className='relative overflow-hidden rounded-xl w-full max-w-95 bg-[#0f0f0f] border border-white/10 shadow-2xl p-7'>
 
                             {/* Subtle Background Glows */}
                             <div className="absolute -top-20 -left-20 w-48 h-48 bg-purple-500/15 blur-[80px] pointer-events-none" />
@@ -65,7 +74,7 @@ function LoginModel({ open, onClose }) {
                                 </span>
 
                                 <h2 className='text-2xl font-bold tracking-tight text-white mb-2'>
-                                    Welcome to <span className='bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text'>GenSite.ai</span>
+                                    Welcome to <span className='bg-linear-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text'>GenSite.ai</span>
                                 </h2>
 
                                 <p className='text-zinc-400 text-xs mb-8'>
