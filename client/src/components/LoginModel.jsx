@@ -6,9 +6,13 @@ import { useState } from 'react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
+
 
 function LoginModel({ open, onClose }) {
     const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
 
     const handleGoogleLogin = async (e) => {
         e.stopPropagation();
@@ -22,14 +26,13 @@ function LoginModel({ open, onClose }) {
                 avatar:result.user.photoURL
 
             },{withCredentials:true});
-            console.log("Login successful:", data);
+            dispatch(setUserData(data));
 
             onClose(false); // Only close the modal on success
 
         } catch (error) {
-            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                console.error("Error signing in with Google:", error);
-            }
+            console.error("Error signing in with Google:", error);
+            
         } finally {
             setIsLoading(false);
         }

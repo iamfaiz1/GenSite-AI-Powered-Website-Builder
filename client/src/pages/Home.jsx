@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { motion} from 'framer-motion'
 import LoginModel from '../components/LoginModel'
+import { useSelector } from 'react-redux'
+
 
 function Home() {
     const highlights = [
@@ -22,7 +24,7 @@ function Home() {
         }
     ]
     const [openLogin, setOpenLogin] = useState(false)
-    
+    const {userData} = useSelector((state) => state.user);
 
     return (
         <div className='relative min-h-screen bg-black text-white overflow-hidden'>
@@ -42,11 +44,16 @@ function Home() {
                         <div className='hidden md:inline text-sm text-zinc-400 hover:text-white cursor-pointer'>
                            Pricing  
                         </div>
+                        {!userData? 
                         <button className='px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-sm'
                         onClick={() => setOpenLogin(true)}
                         >
                             Get Started
+                        </button>:
+                        <button className='flex item-center '>
+                            <img src={userData.avatar || `https://ui-avatars.com/api/?background=random&name=${userData.name}`} alt="user" className='w-9 h-9 rounded-full borderborder-white/20 object-cover' />
                         </button>
+                        }
                     </div>
                 </div>
             </motion.div>
