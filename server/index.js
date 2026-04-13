@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import connectDb from './config/db.js';
 import authRouter from './routes/auth.routes.js';
+import userRouter from './routes/user.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
@@ -19,7 +20,10 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }))
+
+// Routers
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 // test
 app.get('/', (req, res)=>{
