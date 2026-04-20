@@ -7,6 +7,7 @@ import axios from 'axios'
 import { serverUrl } from '../App'
 import { setUserData } from '../redux/userSlice'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -34,11 +35,13 @@ function Home() {
     const [openProfile, setOpenProfile] = useState(false)
     const { userData } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const handleLogout = async () => {
-        try{
-            await axios.get(`${serverUrl}/api/auth/logout`, { withCredentials: true });  
+        try {
+            await axios.post(`${serverUrl}/api/auth/logout`, {}, { withCredentials: true });
             dispatch(setUserData(null));
-        }catch(error){
+            setOpenProfile(false);
+        } catch (error) {
             console.error("Error occurred while logging out:", error);
         }
     }
@@ -77,7 +80,7 @@ function Home() {
                         </button> :
                             <div className='relative'>
                                 <button className='flex item-center ' onClick={() => setOpenProfile(!openProfile)}>
-                                    <img src={userData.avatar || `https://ui-avatars.com/api/?background=random&name=${userData.name}`} alt="user" className='w-9 h-9 rounded-full borderborder-white/20 object-cover' />
+                                    <img src={userData?.avatar || `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(userData?.name || 'User')}`} alt="user" className='w-9 h-9 rounded-full border border-white/20 object-cover' />
                                 </button>
 
                                 <AnimatePresence>
@@ -100,7 +103,7 @@ function Home() {
                                                         <span className='font-semibold'>+</span>
                                                     </button>
 
-                                                    <button className='w-full px-4 pt-3 text-left text-sm hover:bg-white/10'>Dashboard</button>
+                                                    <button className='w-full px-4 pt-3 text-left text-sm hover:bg-white/10' onClick={() => navigate('/dashboard')}>Dashboard</button>
                                                     <button onClick={handleLogout} className='w-full px-4 pt-2 font-semibold text-left text-sm hover:bg-white/5 text-red-500'>Logout</button>
                                                 </div>
                                             </motion.div>
@@ -140,9 +143,10 @@ function Home() {
                     </motion.p>
 
                     <button
-                        onClick={() => setOpenLogin(true)}
-                        className='mt-12 px-10 py-3 rounded-lg bg-white border text-black text-lg font-semibold transition duration-300 hover:scale-105 hover:bg-gray-100'>
-                        Get started
+
+                        onClick={() => !userData ? setOpenLogin(true) : navigate('/dashboard')}
+                        className='mt-12 px-10 py-3 rounded-lg bg-white border text-black text-lg font-semibold transition duration-300 hover:scale-105 hover:bg-gray-100' >
+                        {!userData ? "Get Started" : "Go to Dashboard"}
                     </button>
 
                 </div>

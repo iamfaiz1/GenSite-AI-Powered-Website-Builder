@@ -27,7 +27,6 @@ function LoginModel({ open, onClose }) {
 
             },{withCredentials:true});
             dispatch(setUserData(data));
-
             onClose(false); // Only close the modal on success
 
         } catch (error) {
