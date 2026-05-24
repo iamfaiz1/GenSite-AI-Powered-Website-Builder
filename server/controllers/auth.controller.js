@@ -20,7 +20,7 @@ export const googleAuth = async (req, res)=>{
             console.log('creating new user...');
             user = await User.create({ name, email, avatar });
         }
-        const token = await jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
+        const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         console.log('final user:', user);
         // fix before production
         res.cookie('token', token, {
@@ -30,7 +30,7 @@ export const googleAuth = async (req, res)=>{
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days 
         });
 
-        return res.status(200).json(user);
+        return res.status(200).json({ user, token });
 
     } catch(error){
         res.status(500).json({message: `Google Auth Error: ${error.message}`});

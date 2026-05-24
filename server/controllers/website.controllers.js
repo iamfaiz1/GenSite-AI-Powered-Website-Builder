@@ -200,12 +200,12 @@ export const generateWebsite = async (req, res) => {
       latestCode:parsed.code,
       conversation:[
         {
-          role: 'ai',
-          content: parsed.message,
-        },
-        {
           role: 'user',
           content: prompt,
+        },
+        {
+          role: 'ai',
+          content: parsed.message,
         }
       ]
 
@@ -239,3 +239,89 @@ export const getWebsiteById = async (req, res)=>{
   }
 }
 
+
+// changes to existing website
+export const changes =async (req, res)=>{
+  try{
+    const { prompt } = req.body
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required" })
+    }
+    const website = await Website.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    })
+    if (!website){
+      return res.status(400).json({ message: "Website not found" })
+    }
+
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" })
+    }
+
+    // Credits
+    if(user.credits < 25){
+      return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })  
+    }
+
+    const updatePrompt = `
+    UPDATE THIS HTML WEBSITE.
+
+    CURRENT CODE:
+    ${website.latestCode}
+
+    USER REQUEST:
+    ${prompt}
+
+    RETURN RAW JSON ONLY:
+    {
+      "message": "Short confirmation",
+      "code": "<UPDATED FULL HTML DOCUMENT>"
+    }
+    `
+    let raw = ""
+    let parsed = null
+    for(let i = 0; i < 2 && !parsed; i++) {
+      raw = await generateResponse(updatePrompt);
+      parsed = await extractJson(raw);
+      
+      if (!parsed) {
+        raw = await generateResponse(updatePrompt +"\n\nRETURN ONLY RAW JSON.");
+        parsed = await extractJson(raw);
+      }
+    }
+    if(!parsed.code){
+    // console.log("ai returned invalid response", raw)
+    return res.status(400).json({ message: "AI returned invalid response" })
+    }
+
+    website.conversation.push(
+      {role: 'ai', content: parsed.message},
+      {role: 'user', content: prompt}
+    )
+    website.latestCode = parsed.code;
+    await website.save();
+    user.credits -= 25;
+    await user.save();
+    return res.status(200).json({
+      message: parsed.message,
+      code: parsed.code,
+      remainingCredits: user.credits,
+
+    })
+
+  }catch(error){
+    return res.status(500).json({ message: `Change website Error: ${error}` })
+  }
+}
+
+export const getAll = async (req, res)=>{
+  try{
+    const websites = await Website.find({user: req.user._id})
+    return res.status(200).json(websites)
+  }catch(error){
+    return res.status(500).json({ message: `Get All Websites Error: ${error}` })
+  }
+}

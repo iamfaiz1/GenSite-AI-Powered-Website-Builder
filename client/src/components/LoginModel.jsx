@@ -20,13 +20,19 @@ function LoginModel({ open, onClose }) {
         try {
             setIsLoading(true);
             const result = await signInWithPopup(auth, provider);
-            const {data} = await axios.post(`${serverUrl}/api/auth/google`, {
-                name:result.user.displayName,
-                email:result.user.email,
-                avatar:result.user.photoURL
-
-            },{withCredentials:true});
-            dispatch(setUserData(data));
+            const { data } = await axios.post(
+                `${serverUrl}/api/auth/google`,
+                {
+                    name: result.user.displayName,
+                    email: result.user.email,
+                    avatar: result.user.photoURL,
+                },
+                { withCredentials: true }
+            );
+            if (data?.token) {
+                localStorage.setItem('authToken', data.token);
+            }
+            dispatch(setUserData(data?.user || data));
             onClose(false); // Only close the modal on success
 
         } catch (error) {
@@ -41,7 +47,7 @@ function LoginModel({ open, onClose }) {
         <AnimatePresence>
             {open && (
                 <motion.div
-                    className='fixed inset-0 z- flex items-center justify-center bg-black/70 backdrop-blur-md px-4'
+                    className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4'
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -53,10 +59,10 @@ function LoginModel({ open, onClose }) {
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.92, opacity: 0, y: 15 }}
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className='w-full max-w-95'
+                        className='w-full max-w-sm'
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className='relative overflow-hidden rounded-xl w-full max-w-95 bg-[#0f0f0f] border border-white/10 shadow-2xl p-7'>
+                        <div className='relative overflow-hidden rounded-xl w-full max-w-sm bg-[#0f0f0f] border border-white/10 shadow-2xl p-7'>
 
                             {/* Subtle Background Glows */}
                             <div className="absolute -top-20 -left-20 w-48 h-48 bg-purple-500/15 blur-[80px] pointer-events-none" />
@@ -76,7 +82,7 @@ function LoginModel({ open, onClose }) {
                                 </span>
 
                                 <h2 className='text-2xl font-bold tracking-tight text-white mb-2'>
-                                    Welcome to <span className='bg-linear-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text'>GenSite.ai</span>
+                                    Welcome to <span className='bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text'>GenSite.ai</span>
                                 </h2>
 
                                 <p className='text-zinc-400 text-xs mb-8'>
@@ -87,7 +93,7 @@ function LoginModel({ open, onClose }) {
                                 <motion.button
                                     whileHover={{ scale: 1.01, backgroundColor: "rgba(255, 255, 255, 0.08)" }}
                                     whileTap={{ scale: 0.98 }}
-                                    className='w-full max-w-70 flex items-center justify-center gap-3 px-5 py-2.5 rounded-xl border border-white/10 text-white text-sm font-medium transition-all bg-white/5'
+                                    className='w-full flex items-center justify-center gap-3 px-5 py-2.5 rounded-xl border border-white/10 text-white text-sm font-medium transition-all bg-white/5 hover:bg-white/8'
                                     onClick={handleGoogleLogin}
                                 >
                                     <img

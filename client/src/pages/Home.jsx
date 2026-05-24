@@ -39,6 +39,7 @@ function Home() {
     const handleLogout = async () => {
         try {
             await axios.post(`${serverUrl}/api/auth/logout`, {}, { withCredentials: true });
+            localStorage.removeItem('authToken');
             dispatch(setUserData(null));
             setOpenProfile(false);
         } catch (error) {
@@ -79,7 +80,7 @@ function Home() {
                             Get Started
                         </button> :
                             <div className='relative'>
-                                <button className='flex item-center ' onClick={() => setOpenProfile(!openProfile)}>
+                                <button className='flex items-center' onClick={() => setOpenProfile(!openProfile)}>
                                     <img src={userData?.avatar || `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(userData?.name || 'User')}`} alt="user" className='w-9 h-9 rounded-full border border-white/20 object-cover' />
                                 </button>
 

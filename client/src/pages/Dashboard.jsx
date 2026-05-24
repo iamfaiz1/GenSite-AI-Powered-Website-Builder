@@ -10,15 +10,15 @@ function Dashboard() {
 
   return (
     <div className='min-h-screen bg-black text-white'>
-      <div className='sticky top-0 z-50 dashboard-header'>
+      <div className='sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10'>
         <div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
           <div className='flex items-center gap-4'>
-            <button className='text-white hover:text-gray-300' onClick={() => navigate('/')}>
+            <button className='text-white hover:text-zinc-300 transition-colors' onClick={() => navigate('/')}>
               <ArrowLeft size={20} />
             </button>
             <h1 className='text-xl font-bold'>Dashboard</h1>
           </div>
-          <button className='text-white hover:text-gray-300 font-semibold hover:scale-105 transition' onClick={()=> navigate('/generate')}>
+          <button className='px-4 py-2 rounded-lg bg-white text-black font-semibold hover:bg-zinc-100 transition-colors' onClick={()=> navigate('/generate')}>
             + New Website
           </button>
         </div>
@@ -28,32 +28,34 @@ function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+          className=''
         >
           <p className='text-sm text-zinc-400 mb-1'>Welcome back</p>
-          <h1 className='text-3xl font-bold'>{userData?.name || 'Guest'}</h1>
+          <h1 className='text-3xl font-bold mb-8'>{userData?.name || 'Guest'}</h1>
 
           {/* Placeholder cards for websites */}
-          <div className='dashboard-card rounded-lg p-6'>
-            <h3 className='text-lg font-semibold mb-2'>Website 1</h3>
-            <p className='text-gray-400 text-sm mb-4'>Generated website description</p>
-            <button className='bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-colors'>
-              View
-            </button>
-          </div>
-          <div className='dashboard-card rounded-lg p-6'>
-            <h3 className='text-lg font-semibold mb-2'>Website 2</h3>
-            <p className='text-gray-400 text-sm mb-4'>Another generated website</p>
-            <button className='bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-colors'>
-              View
-            </button>
-          </div>
-          <div className='dashboard-card rounded-lg p-6'>
-            <h3 className='text-lg font-semibold mb-2'>Website 3</h3>
-            <p className='text-gray-400 text-sm mb-4'>Yet another website</p>
-            <button className='bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-colors'>
-              View
-            </button>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            <div className='rounded-lg p-6 bg-white/5 border border-white/10 hover:border-white/20 transition-colors'>
+              <h3 className='text-lg font-semibold mb-2'>Website 1</h3>
+              <p className='text-zinc-400 text-sm mb-4'>Generated website description</p>
+              <button className='bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-100 transition-colors'>
+                View
+              </button>
+            </div>
+            <div className='rounded-lg p-6 bg-white/5 border border-white/10 hover:border-white/20 transition-colors'>
+              <h3 className='text-lg font-semibold mb-2'>Website 2</h3>
+              <p className='text-zinc-400 text-sm mb-4'>Another generated website</p>
+              <button className='bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-100 transition-colors'>
+                View
+              </button>
+            </div>
+            <div className='rounded-lg p-6 bg-white/5 border border-white/10 hover:border-white/20 transition-colors'>
+              <h3 className='text-lg font-semibold mb-2'>Website 3</h3>
+              <p className='text-zinc-400 text-sm mb-4'>Yet another website</p>
+              <button className='bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-100 transition-colors'>
+                View
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

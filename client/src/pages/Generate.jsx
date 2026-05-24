@@ -9,11 +9,23 @@ import { serverUrl } from '../App.jsx';
 function Generate() {
   const navigate = useNavigate();
   const [prompt, setPrompt] = useState('');
-  const handleGenerateWebsite = async ()=>{
-    try{
-      const result = await axios.post(`${serverUrl}/api/website/generate`, {prompt}, {withCredentials: true});
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  const handleGenerateWebsite = async () => {
+    try {
+      const result = await axios.post(
+        `${serverUrl}/api/website/generate`,
+        { prompt },
+        {
+          withCredentials: true,
+          headers: getAuthHeaders(),
+        }
+      );
       console.log(result.data);
-    }catch(error){
+    } catch (error) {
       console.log("Error generating website:", error);
     }
   } 
