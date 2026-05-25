@@ -298,8 +298,8 @@ export const changes =async (req, res)=>{
     }
 
     website.conversation.push(
-      {role: 'ai', content: parsed.message},
-      {role: 'user', content: prompt}
+      {role: 'user', content: prompt},
+      {role: 'ai', content: parsed.message}
     )
     website.latestCode = parsed.code;
     await website.save();

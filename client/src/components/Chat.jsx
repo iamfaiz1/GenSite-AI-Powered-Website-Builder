@@ -2,7 +2,7 @@
 import React from 'react';
 import { Send } from 'lucide-react';
 
-function Chat({ website, handleUpdate, setPrompt, prompt, messages }) {
+function Chat({ website, handleUpdate, setPrompt, prompt, messages, thinkingSteps, thinkingIndex, updateLoading }) {
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -23,6 +23,15 @@ function Chat({ website, handleUpdate, setPrompt, prompt, messages }) {
             </div>
           </div>
         ))}
+
+        {/* dynamic loading text*/}
+        {updateLoading && (
+          <div className='max-w-[85%] mr-auto'>
+            <div className='px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm bg-zinc-800 border border-white/10 text-zinc-200 rounded-bl-sm'>
+              {thinkingSteps[thinkingIndex]}
+            </div>
+          </div>
+        )}
       </div>
       
       {/* chat inputbox */}
@@ -35,7 +44,9 @@ function Chat({ website, handleUpdate, setPrompt, prompt, messages }) {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <button className='px-4 py-3 bg-white rounded-2xl text-black' onClick={handleUpdate}>
+          <button className='px-4 py-3 bg-white rounded-2xl text-black' onClick={handleUpdate}
+
+          >
             <Send size={14} />
           </button>
         </div>
