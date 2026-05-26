@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,12 +9,27 @@ import { serverUrl } from '../App.jsx';
 function Generate() {
   const navigate = useNavigate();
   const [prompt, setPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const [error, setError] = useState("");
   const getAuthHeaders = () => {
     const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+  
+  const PHASES = [
+        'Understanding the requirements',
+        'analyzing update request',
+        'Planning the structure',
+        'Designing the layout',
+        'Implementing the features',
+        'Testing and debugging',
+        'Finalizing the code'
+    ]
 
   const handleGenerateWebsite = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/website/generate`,
@@ -24,11 +39,46 @@ function Generate() {
           headers: getAuthHeaders(),
         }
       );
-      console.log(result.data);
+      // console.log(result.data);
+      setProgress(100);
+      setLoading(false);
+      navigate(`/editor/${result.data.websiteId}`);
     } catch (error) {
       console.log("Error generating website:", error);
+      setError(error.response?.data?.message || "An error occurred while generating the website.");
+      setLoading(false);
     }
   } 
+
+  useEffect(()=>{
+    if(!loading){
+      setProgress(0);
+      setPhaseIndex(0);
+      return;
+    }
+    let value = 0;
+    let phase = 0;
+
+    const interval = setInterval(()=>{
+      const increment = 
+            value<20
+            ? Math.random() * 1.5
+            : value < 60
+            ? Math.random() * 1
+            : value < 90
+            ? Math.random() * 0.5
+            : Math.random() * 0.2;
+      value += increment;
+      if(value >=93) value = 93;
+      phase = Math.min(
+        Math.floor((value / 100) * PHASES.length),
+        PHASES.length - 1
+      )
+    setProgress(value);
+    setPhaseIndex(phase);
+  }, 3000);
+  return () => clearInterval(interval);
+}, [loading])
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
@@ -53,7 +103,7 @@ function Generate() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-20 relative z-10">
+      <div className="max-w-4xl mx-auto px-6 py-6 relative z-10">
         
         {/* Title Section */}
         <motion.div
@@ -78,7 +128,7 @@ function Generate() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="max-w-3xl mx-auto"
+          className="max-w-3xl h-40 mx-auto"
         >
           <div className="relative group">
             {/* Outer glow for the text box */}
@@ -86,23 +136,34 @@ function Generate() {
 
             <div className="relative bg-[#121212] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden focus-within:border-white/30 transition-colors">
               <textarea
+                required
                 onChange={(e)=> setPrompt(e.target.value)}
                 value={prompt}
                 placeholder="Describe your website in detail... (e.g., A dark-themed portfolio for a designer)"
                 className="w-full h-64 p-8 bg-transparent outline-none text-zinc-200 text-lg resize-none placeholder:text-zinc-600"
               ></textarea>
-
+              
               {/* Bottom bar holding the button */}
               <div className="absolute bottom-0 left-0 w-full p-4 flex items-center justify-between bg-gradient-to-t from-[#121212] via-[#121212] to-transparent pt-12">
                 <span className="text-xs text-zinc-500 font-medium px-4 hidden sm:block">
                   Be as detailed as possible
                 </span>
-
+                
+                {/* error display */}
+                {error && (
+                  <p className="text-red-500 text-sm">{error}</p>
+                )}
+                
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleGenerateWebsite}
-                  className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold bg-white text-black shadow-lg shadow-white/10 hover:shadow-white/20 transition-all ml-auto"
+                  disabled={loading || !prompt.trim()}
+                  className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold bg-white text-black shadow-lg shadow-white/10 ml-auto ${(prompt.trim() || !loading) ? 
+                    "bg-white text-black hover:bg-white/90" :
+                    "bg-white/30 text-white/50 cursor-not-allowed"
+                  }`}
+                  
                 >
                   <Sparkles size={18} />
                   Generate Website
@@ -111,7 +172,24 @@ function Generate() {
             </div>
           </div>
         </motion.div>
-        
+
+        {/* progress bar */}
+        {loading && (
+          <div className="max-w-sm mx-auto mt-30">
+            <div className="flex justify-between text-sm text-zinc-400 mb-2">
+              <span>Generating your website...</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div className="h-1 bg-zinc-700 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

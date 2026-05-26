@@ -10,6 +10,9 @@ websiteRouter.post('/generate',isAuth, generateWebsite);
 websiteRouter.put(`/update/:id`,isAuth, changes);
 websiteRouter.get(`/getById/:id`,isAuth, getWebsiteById);
 websiteRouter.get(`/getAll`,isAuth, getAll);
+websiteRouter.get(`/deploy/:id`,isAuth, deploy);
+
+
 
 
 export default websiteRouter;

@@ -85,7 +85,7 @@ function WebsiteEditor() {
                 });
                 setCode(result.data.latestCode);
                 setMessages(result.data.conversation ? result.data.conversation : []);
-                
+
 
                 if (!result?.data) {
                     setError(result?.data?.message || "No result found.");
@@ -148,30 +148,30 @@ function WebsiteEditor() {
                 <div className='h-14 px-4 flex justify-between items-center border-b border-white/10 bg-black/80'>
                     <span className='text-xs text-zinc-400'>Live Preview</span>
                     <div className='gap-2 flex'>
-                    {/* HEADER BUTTONS */}
-                        <button 
-                        className='flex items-center gap-2 transiton hover: scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-2 py-1'
+                        {/* HEADER BUTTONS */}
+                        <button
+                            className='flex items-center gap-2 transiton hover: scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-2 py-1'
                         >
                             <Rocket size={16} /> Deploy </button>
-                        
+
 
                         <button
-                        className='p-2 flex items-center gap-2 lg:hidden'
-                        onClick={() => setShowChat(s => !s)}
+                            className='p-2 flex items-center gap-2 lg:hidden'
+                            onClick={() => setShowChat(s => !s)}
                         >
                             <MessageSquare size={18} /> </button>
-                        
+
 
                         <button
-                        className='flex items-center gap-2'
-                        onClick={() => setShowCode(s => !s)}
+                            className='flex items-center gap-2'
+                            onClick={() => setShowCode(s => !s)}
                         >
                             <Code2 size={18} /> </button>
-                        
-                        
-                        <button 
-                        className='flex items-center gap-2'
-                        onClick={() => setShowFullPreview(true)}
+
+
+                        <button
+                            className='flex items-center gap-2'
+                            onClick={() => setShowFullPreview(true)}
                         >
                             <Monitor size={18} /> </button>
                     </div>
@@ -184,7 +184,7 @@ function WebsiteEditor() {
             {/* manual code editor */}
             <AnimatePresence>
                 {showCode && (
-                    <motion.div 
+                    <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
@@ -193,29 +193,29 @@ function WebsiteEditor() {
                     >
                         <div className=' h-12 p-4 border-b border-white/10 flex items-center justify-between'>
                             <span className='text-sm font-medium'>index.html</span>
-                            <button onClick={() => setShowCode(false)}> <X size={16}/> </button>
+                            <button onClick={() => setShowCode(false)}> <X size={16} /> </button>
                         </div>
                         <Editor
-                        theme='vs-dark'
-                        value={code}
-                        onChange={(value) => setCode(value)}
-                        language='html'
+                            theme='vs-dark'
+                            value={code}
+                            onChange={(value) => setCode(value)}
+                            language='html'
                         />
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* chat for small device */} 
+            {/* chat for small device */}
             <AnimatePresence>
                 {showChat && (
-                    <motion.div 
+                    <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ duration: 0.15 }}
                         className='flex flex-col fixed top-0 inset-y-0 w-full right-0 z-[9999] left-0 h-full  bg-black/90 text-sm p-6 overflow-auto z-50'
                     >
-                        <Header website={website} onclose={() => setShowChat(false)}/>
+                        <Header website={website} onclose={() => setShowChat(false)} />
                         <Chat website={website} handleUpdate={handleUpdate} setPrompt={setPrompt} prompt={prompt} messages={messages} thinkingSteps={thinkingSteps} thinkingIndex={thinkingIndex} updateLoading={updateLoading} />
                     </motion.div>
                 )}
@@ -225,11 +225,11 @@ function WebsiteEditor() {
             <AnimatePresence>
                 {showFullPreview && (
                     <motion.div className='flex flex-col fixed top-0 inset-y-0 w-full right-0 '>
-                        <iframe className='h-full w-full bg-white' srcDoc={code}/>
-                        <button 
-                        className='absolute top-4 right-4 bg-black/50 rounded-xl p-2'
-                        onClick={() => setShowFullPreview(false)}   
-                        ><X/> </button>
+                        <iframe className='h-full w-full bg-white' srcDoc={code} />
+                        <button
+                            className='absolute top-4 right-4 bg-black/50 rounded-xl p-2'
+                            onClick={() => setShowFullPreview(false)}
+                        ><X /> </button>
                     </motion.div>
                 )}
             </AnimatePresence>
