@@ -3,10 +3,11 @@ import { ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { serverUrl } from '../App'
+import axiosInstance from '../utils/axiosInstance'
+import serverUrl from '../config/config.js';
 import { useState, useEffect } from 'react'
 import { Rocket, ArrowRight } from 'lucide-react'
+
 
 function Dashboard() {
   const { userData } = useSelector(state => state.user)
@@ -15,31 +16,22 @@ function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  useEffect(() => {
+  const handleDeploy = async (id)=>{
+    try{
+      const result = await axiosInstance.get(`${serverUrl}/api/website/deploy/${id}`);
 
-    const handleDeploy = async (id)=>{
-      try{
-        const result = await axios.get(`${serverUrl}/api/website/deploy/${id}`, {
-          withCredentials: true
-          // headers: {
-          //   Authorization: `Bearer ${localStorage.getItem('authToken')}`
-          // }
-        });
-        window.open(result.data.url, '_blank'); //open deployed website
-      }catch(error){
-        console.log("Deploy error (from dashboard):", error);
-      }
+      window.open(result.data.url, '_blank'); //open deployed website
+    }catch(error){
+      console.log("Deploy error (from dashboard):", error);
     }
+  }
+
+
+  useEffect(() => {
     const handleGetAllWebsites = async () => {
       setLoading(true);
       try {
-        const token = localStorage.getItem('authToken');
-        const result = await axios.get(`${serverUrl}/api/website/getAll`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const result = await axiosInstance.get(`${serverUrl}/api/website/getAll`);
         setWebsites(result.data || []);
         setLoading(false);
       } catch (error) {

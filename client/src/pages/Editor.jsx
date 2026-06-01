@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { serverUrl } from '../App';
+import serverUrl from '../config/config.js';
 import Header from '../components/Header';
 import Chat from '../components/Chat';
 import { Monitor, Code2, Rocket, MessageSquare } from 'lucide-react'
@@ -178,7 +178,8 @@ function WebsiteEditor() {
                 </div>
 
                 {/* iframe */}
-                <iframe ref={iframeRef} className='flex-1 w-full bg-white' />
+                <iframe ref={iframeRef} className='flex-1 w-full bg-white' 
+                sandbox='allow-scripts allow-same-origin, allow-forms '/>
             </div >
 
             {/* manual code editor */}
@@ -225,7 +226,7 @@ function WebsiteEditor() {
             <AnimatePresence>
                 {showFullPreview && (
                     <motion.div className='flex flex-col fixed top-0 inset-y-0 w-full right-0 '>
-                        <iframe className='h-full w-full bg-white' srcDoc={code} />
+                        <iframe className='h-full w-full bg-white' srcDoc={code} sandbox='allow-scripts allow-same-origin, allow-forms '/>
                         <button
                             className='absolute top-4 right-4 bg-black/50 rounded-xl p-2'
                             onClick={() => setShowFullPreview(false)}

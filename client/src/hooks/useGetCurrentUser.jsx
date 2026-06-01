@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import axios from 'axios';
-import { serverUrl } from '../App';
+import serverUrl from '../config/config.js';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 

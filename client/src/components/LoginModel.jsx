@@ -4,7 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from '../firebase';
 import { useState } from 'react';
 import axios from 'axios';
-import { serverUrl } from '../App';
+import serverUrl from '../config/config.js';
 
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';

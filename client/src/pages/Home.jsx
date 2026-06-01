@@ -4,7 +4,7 @@ import LoginModel from '../components/LoginModel'
 import { useSelector } from 'react-redux'
 import { Coins } from 'lucide-react'
 import axios from 'axios'
-import { serverUrl } from '../App'
+import serverUrl from '../config/config.js';
 import { setUserData } from '../redux/userSlice'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'

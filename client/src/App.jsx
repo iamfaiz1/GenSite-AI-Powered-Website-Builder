@@ -8,7 +8,6 @@ import useGetCurrentUser from './hooks/useGetCurrentUser'
 import { useSelector } from 'react-redux'
 import LiveSite from './pages/LiveSite'
 
-export const serverUrl = 'http://localhost:8000'
 
 function App() {
   useGetCurrentUser();
