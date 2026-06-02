@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance'
 import serverUrl from '../config/config.js';
 import { useState, useEffect } from 'react'
-import { Rocket, ArrowRight } from 'lucide-react'
+import { Rocket, ArrowRight, Share2, Check } from 'lucide-react'
+
 
 
 function Dashboard() {
@@ -15,12 +16,18 @@ function Dashboard() {
   const [websites, setWebsites] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [copyId, setCopyId] = useState("")
 
   const handleDeploy = async (id)=>{
     try{
       const result = await axiosInstance.get(`${serverUrl}/api/website/deploy/${id}`);
-
       window.open(result.data.url, '_blank'); //open deployed website
+      setWebsites(
+        (prev) => prev.map(w => w._id ===id
+        ? {...w, deployed: true, deployUrl: result.data.url}
+        : w
+        )
+      );
     }catch(error){
       console.log("Deploy error (from dashboard):", error);
     }
@@ -42,6 +49,15 @@ function Dashboard() {
     }
     handleGetAllWebsites();
   }, [])
+
+  // copy deployed url feature function
+  const handleCopy  = async (site)=>{
+    await navigator.clipboard.writeText(site.deployUrl);
+    setCopyId(site._id);
+    setTimeout(() => {
+      setCopyId("");
+    }, 3500);
+  }
 
   return (
     <div className='min-h-screen bg-black text-white'>
@@ -81,11 +97,14 @@ function Dashboard() {
           <div className='mt-24 text-center text-zinc-400'> You have no websites yet. Click "New Website" to get started! </div>
         }
 
+
         {/* displaying created websites */}
         {websites.length > 0 && !loading && !error && (
           <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
-            {websites.map((w, i) => (
-              <motion.div
+            {websites.map((w, i) => {
+              const copied = copyId === w._id;
+              return (
+                <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -93,9 +112,13 @@ function Dashboard() {
                 whileHover={{ y: -6 }}
                 className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] shadow-2xl transition-colors hover:border-white/20 hover:bg-white/[0.05]"
               >
-                <div className="relative h-56 w-full bg-zinc-900 overflow-hidden">
+                <div 
+                onClick={() => navigate(`/editor/${w._id}`)} 
+                className="relative h-56 w-full bg-zinc-900 overflow-hidden">
                   <div className="pointer-events-none absolute inset-0 h-[400%] w-[400%] origin-top-left scale-25">
                     <iframe
+                      width="100%"
+                      height="100%"
                       srcDoc={w.latestCode}
                       title={w.name}
                       frameBorder="0"
@@ -124,16 +147,43 @@ function Dashboard() {
                   </p>
                   {/* deploy button on cards*/}
                   {/* deploy button on cards */}
-                  {!w.deployed && (
-                    <button className='mt-auto flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-0 py-2'
+                  {!w.deployed ? (
+                    <motion.button 
+                    whileTap={{ scale: 0.95 }}
+                    className='mt-auto flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-0 py-2'
                     onClick={() => handleDeploy(w._id)}
                     >
                       <Rocket size={18} /> Deploy
-                    </button>
-                  )}
+                    </motion.button>
+                  ):
+                  // copy button if already deployed
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCopy(w)}
+                    className={`mt-auto flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-linear-to-r 
+                    rounded-3xl px-0 py-2
+                    
+                    ${copied 
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                      : 'bg-white/10 hover:bg-white/20 bg-white/20 border border-white/10'}
+                    `}
+                    >
+                      {copied ?
+                        <> 
+                          Copied! <Check size={18} /> 
+                        </>
+                        :
+                        <> 
+                          Copy Link to Share
+                          <Share2 size={18}/>
+                        </>
+                      }
+                    </motion.button>
+                  }
                 </div>
               </motion.div>
-            ))}
+              )
+            })}
           </div>
         )}
 

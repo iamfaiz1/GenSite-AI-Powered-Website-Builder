@@ -7,6 +7,7 @@ import WebsiteEditor from './pages/Editor'
 import useGetCurrentUser from './hooks/useGetCurrentUser' 
 import { useSelector } from 'react-redux'
 import LiveSite from './pages/LiveSite'
+import Pricing from './pages/Pricing'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path='/generate' element={userData ? <Generate/> :  <Home/>} />
         <Route path='/editor/:id' element={userData ? <WebsiteEditor/> :  <Home/>} />
         <Route path='/site/:id' element={<LiveSite/>}/>
+        <Route path='/pricing' element={<Pricing/>}/>
     </Routes>
     </BrowserRouter>
   )

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import serverUrl from '../config/config.js';
@@ -8,6 +7,7 @@ import { Monitor, Code2, Rocket, MessageSquare } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import axiosInstance from '../utils/axiosInstance.js';
 
 
 function WebsiteEditor() {
@@ -34,10 +34,17 @@ function WebsiteEditor() {
     ]
 
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('authToken');
-        return token ? { Authorization: `Bearer ${token}` } : {};
+
+    const handleDeploy = async (id)=>{
+    try{
+      const result = await axiosInstance.get(`${serverUrl}/api/website/deploy/${website._id}`);
+      window.open(result.data.url, '_blank'); //open deployed website
+      
+    }catch(error){
+      console.log("Deploy error (from dashboard):", error);
+    }
     };
+
 
     const handleUpdate = async () => {
         if (!prompt) return;
@@ -48,12 +55,8 @@ function WebsiteEditor() {
 
         setMessages(prev => [...prev, { role: 'user', content: prompt }]);
         try {
-            const result = await axios.put(`${serverUrl}/api/website/update/${id}`,
-                { prompt: text },
-                {
-                    withCredentials: true,
-                    headers: getAuthHeaders(),
-                }
+            const result = await axiosInstance.put(`${serverUrl}/api/website/update/${id}`,
+                { prompt: text }
             );
             setMessages(prev => [...prev, { role: 'ai', content: result.data.message }]);
             setCode(result.data.code);
@@ -63,7 +66,7 @@ function WebsiteEditor() {
         } finally {
             setUpdateLoading(false);
         }
-    }
+    };
 
     // Dyanamic Loading Text mechanism
     useEffect(() => {
@@ -79,10 +82,7 @@ function WebsiteEditor() {
     useEffect(() => {
         const handleGetWebsite = async () => {
             try {
-                const result = await axios.get(`${serverUrl}/api/website/getById/${id}`, {
-                    withCredentials: true,
-                    headers: getAuthHeaders(),
-                });
+                const result = await axiosInstance.get(`${serverUrl}/api/website/getById/${id}`);
                 setCode(result.data.latestCode);
                 setMessages(result.data.conversation ? result.data.conversation : []);
 
@@ -149,11 +149,13 @@ function WebsiteEditor() {
                     <span className='text-xs text-zinc-400'>Live Preview</span>
                     <div className='gap-2 flex'>
                         {/* HEADER BUTTONS */}
-                        <button
-                            className='flex items-center gap-2 transiton hover: scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-2 py-1'
-                        >
-                            <Rocket size={16} /> Deploy </button>
-
+                        {website.deployed ? "":
+                            <button
+                                onClick={()=> handleDeploy(website._id)}
+                                className='flex items-center gap-2 transiton hover: scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-2 py-1'
+                            >
+                                <Rocket size={16} /> Deploy </button>
+                        }
 
                         <button
                             className='p-2 flex items-center gap-2 lg:hidden'
