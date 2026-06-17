@@ -115,7 +115,7 @@ export const verifyPayment = async (req, res) => {
     
     await user.save();
 
-    console.log(`Success! Upgraded to ${planName} and added ${credits} credits.`);
+    //console.log(`Success! Upgraded to ${planName} and added ${credits} credits.`);
 
     return res.status(200).json({
       message: 'Payment verified successfully',
@@ -124,7 +124,7 @@ export const verifyPayment = async (req, res) => {
       plan: user.plan
     });
   } catch (error) {
-    console.log("Verification Crash Error:", error);
+    //console.log("Verification Crash Error:", error);
     return res.status(500).json({ message: 'Payment verification failed', error: error.message });
   }
 };

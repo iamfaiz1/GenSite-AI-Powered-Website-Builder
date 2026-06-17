@@ -186,7 +186,7 @@ export const generateWebsite = async (req, res) => {
       }
     }
     if(!parsed.code){
-    // console.log("ai returned invalid response", raw)
+    // //console.log("ai returned invalid response", raw)
     return res.status(400).json({ message: "AI returned invalid response" })
     }
     

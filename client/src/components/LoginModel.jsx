@@ -35,7 +35,7 @@ function LoginModel({ open, onClose }) {
             onClose(false); // Only close the modal on success
 
         } catch (error) {
-            console.error("Error signing in with Google:", error);
+            //console.error("Error signing in with Google:", error);
             
         } finally {
             setIsLoading(false);

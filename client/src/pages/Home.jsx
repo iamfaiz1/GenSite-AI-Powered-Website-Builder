@@ -44,7 +44,7 @@ function Home() {
             dispatch(setUserData(null));
             setOpenProfile(false);
         } catch (error) {
-            console.error("Error occurred while logging out:", error);
+            //console.error("Error occurred while logging out:", error);
         }
     }
 

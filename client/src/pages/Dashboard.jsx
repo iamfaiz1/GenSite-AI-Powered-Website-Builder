@@ -29,7 +29,7 @@ function Dashboard() {
         )
       );
     }catch(error){
-      console.log("Deploy error (from dashboard):", error);
+      //console.log("Deploy error (from dashboard):", error);
     }
   }
 

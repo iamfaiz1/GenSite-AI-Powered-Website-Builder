@@ -41,7 +41,7 @@ function WebsiteEditor() {
       window.open(result.data.url, '_blank'); //open deployed website
       
     }catch(error){
-      console.log("Deploy error (from dashboard):", error);
+      //console.log("Deploy error (from dashboard):", error);
     }
     };
 
@@ -61,7 +61,7 @@ function WebsiteEditor() {
             setMessages(prev => [...prev, { role: 'ai', content: result.data.message }]);
             setCode(result.data.code);
         } catch (error) {
-            console.error("Error updating website:", error.response?.data || error.message);
+            //console.error("Error updating website:", error.response?.data || error.message);
             setError(error.response?.data?.message || error.message || "An error occurred while updating.");
         } finally {
             setUpdateLoading(false);

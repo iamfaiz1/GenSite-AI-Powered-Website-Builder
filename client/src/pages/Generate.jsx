@@ -39,7 +39,7 @@ function Generate() {
           headers: getAuthHeaders(),
         }
       );
-      // console.log(result.data);
+      // //console.log(result.data);
       setProgress(100);
       setLoading(false);
       navigate(`/editor/${result.data.websiteId}`);

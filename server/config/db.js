@@ -5,9 +5,9 @@ const connectDb = async ()=>{
         await mongoose.connect(process.env.MONGODB_URL, {
         dbName: "GenSite"   // FORCE THIS
         });
-        console.log('Database Connected', mongoose.connection.name);
+        //console.log('Database Connected', mongoose.connection.name);
     } catch(error){
-        console.error('Error DB:', error.message);
+        //console.error('Error DB:', error.message);
     }
 
 }

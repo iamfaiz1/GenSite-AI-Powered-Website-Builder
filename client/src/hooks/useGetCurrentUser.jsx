@@ -17,7 +17,7 @@ function useGetCurrentUser() {
                 const payload = result.data?.user ? result.data.user : result.data;
                 dispatch(setUserData(payload));
             } catch (error) {
-                console.error("Error fetching current user:", error);
+                //console.error("Error fetching current user:", error);
             }
         };
         getCurrentUser();
