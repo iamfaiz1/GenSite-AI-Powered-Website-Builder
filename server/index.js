@@ -6,6 +6,7 @@ import connectDb from './config/db.js';
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
 import websiteRouter from './routes/website.routes.js';
+import paymentRouter from './routes/payment.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
@@ -27,6 +28,7 @@ app.use(cors({
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/website", websiteRouter);
+app.use('/api', paymentRouter);
 
 // test
 app.get('/', (req, res)=>{

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from '../firebase';
 import { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance.js';
 import serverUrl from '../config/config.js';
 
 import { useDispatch } from 'react-redux';
@@ -20,14 +20,13 @@ function LoginModel({ open, onClose }) {
         try {
             setIsLoading(true);
             const result = await signInWithPopup(auth, provider);
-            const { data } = await axios.post(
-                `${serverUrl}/api/auth/google`,
+            const { data } = await axiosInstance.post(
+                '/api/auth/google',
                 {
                     name: result.user.displayName,
                     email: result.user.email,
                     avatar: result.user.photoURL,
-                },
-                { withCredentials: true }
+                }
             );
             if (data?.token) {
                 localStorage.setItem('authToken', data.token);

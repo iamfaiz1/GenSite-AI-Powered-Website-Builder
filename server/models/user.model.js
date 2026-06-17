@@ -16,12 +16,11 @@ const userSchema = new mongoose.Schema({
     },
     credits:{
         type: Number,
-        default: 100,
+        default: 10,
         min: 0
     },
     plan:{
         type: String,
-        enum: ['free', 'pro', 'enterprise'],
         default: 'free'
     },
 

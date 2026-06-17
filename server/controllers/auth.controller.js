@@ -6,17 +6,20 @@ dotenv.config();
 
 export const googleAuth = async (req, res)=>{
     try{
-        const {name , email, avatar} = req.body;
+        let { name, email, avatar } = req.body;
         console.log("Incoming:", name, email, avatar);
 
-        if(!email){
-            return res.status(400).json({message: 'Email is required'});
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
         }
+
+        const fallbackName = email.split('@')[0] || 'User';
+        name = name || fallbackName;
 
         let user = await User.findOne({ email });
         console.log("User found:", user);
 
-        if(!user){
+        if (!user) {
             console.log('creating new user...');
             user = await User.create({ name, email, avatar });
         }
@@ -25,9 +28,9 @@ export const googleAuth = async (req, res)=>{
         // fix before production
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'none',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days 
+            maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
         });
 
         return res.status(200).json({ user, token });

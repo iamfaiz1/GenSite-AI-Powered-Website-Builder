@@ -1,15 +1,16 @@
 import React from 'react'
-import { ArrowLeft, Check, Coins, Motorbike } from 'lucide-react'
+import { ArrowLeft, Check, Coins } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { motion, } from 'framer-motion'
+import RazorpayCheckout from '../components/RazorpayCheckout.jsx'
 
 
 const plans = [
   {
-    key: "free",
-    name: "Free",
-    price: "₹0",
-    credits: 100,
+    key: "trial",
+    name: "Trial",
+    price: "₹5",
+    credits: 5,
     description: "Perfect to explore GenWeb.ai",
     features: [
       "AI website generation",
@@ -21,13 +22,13 @@ const plans = [
     button: "Get Started",
   },
   {
-    key: "pro",
-    name: "Pro",
-    price: "₹499",
-    credits: 500,
+    key: "basic",
+    name: "Basic",
+    price: "₹19",
+    credits: 25,
     description: "For serious creators & freelancers",
     features: [
-      "500 AI credits",
+      "25 AI credits",
       "Advanced website generation",
       "Premium templates",
       "Custom animations",
@@ -35,16 +36,16 @@ const plans = [
       "Export source code",
     ],
     popular: true,
-    button: "Upgrade to Pro",
+    button: "Try Basic",
   },
   {
-    key: "business",
-    name: "Business",
-    price: "₹1499",
-    credits: 2000,
+    key: "pro",
+    name: "Pro",
+    price: "₹49",
+    credits: 75,
     description: "Best for agencies and teams",
     features: [
-      "2000 AI credits",
+      "75 AI credits",
       "Unlimited projects",
       "Team collaboration",
       "White-label exports",
@@ -52,8 +53,25 @@ const plans = [
       "Dedicated support",
     ],
     popular: false,
-    button: "Contact Sales",
+    button: "You're Pro",
   },
+  {
+    key: "legend",
+    name: "Legend",
+    price: "₹99",
+    credits: 165,
+    description: "For the most ambitious projects",
+    features: [
+      "165 AI credits",
+      "Unlimited projects",
+      "Team collaboration",
+      "White-label exports",
+      "Priority generation queue",
+      "Dedicated support",
+    ],
+    popular: false,
+    button: "Be Legend",
+  }
 ];
 
 
@@ -124,17 +142,7 @@ function Pricing() {
             ))}
           </ul>
 
-          <motion.button
-          whileTap = {{scale: 0.96}}
-          className = {`w-full py-3 rounded-xl font-semibold transition 
-          ${p.popular ?
-            "bg-indigo-500  hover:bg-indigo-600" :
-            "bg-white/10 hover:bg-white/20"
-            } disabled:opacity-60`
-          }
-          >
-            {p.button}
-          </motion.button>
+          <RazorpayCheckout plan={p} />
         </motion.div>
       ))}
     </div>

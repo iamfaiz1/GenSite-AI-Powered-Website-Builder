@@ -167,7 +167,7 @@ export const generateWebsite = async (req, res) => {
     }
 
     // Credits
-    if(user.credits <50){
+    if(user.credits <5){
       return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })  
     }
 
@@ -210,7 +210,7 @@ export const generateWebsite = async (req, res) => {
       ]
 
     })
-    user.credits -= 50;
+    user.credits -= 5;
     await user.save();
     return res.status(200).json({
       websiteId: website._id,
@@ -262,7 +262,7 @@ export const changes =async (req, res)=>{
     }
 
     // Credits
-    if(user.credits < 25){
+    if(user.credits < 2){
       return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })  
     }
 
@@ -303,7 +303,7 @@ export const changes =async (req, res)=>{
     )
     website.latestCode = parsed.code;
     await website.save();
-    user.credits -= 25;
+    user.credits -= 2;
     await user.save();
     return res.status(200).json({
       message: parsed.message,
