@@ -1,4 +1,4 @@
-import {generateResponse} from '../config/openRouter.js'
+import {generateResponse} from '../APIs/openRouter.js'
 import extractJson from '../utils/extractJson.js';
 
 

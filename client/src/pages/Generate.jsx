@@ -76,7 +76,7 @@ function Generate() {
       )
     setProgress(value);
     setPhaseIndex(phase);
-  }, 3000);
+  }, 1250);
   return () => clearInterval(interval);
 }, [loading])
 

@@ -1,14 +1,14 @@
 const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions'
 
-const model = "deepseek/deepseek-chat"
+const model = "openai/gpt-oss-120b:free"
 
 export const generateResponse = async (prompt) => {
     const res = await fetch(openRouterUrl, {
         method: 'POST',
         headers: {
             Authorization: 'Bearer ' + process.env.OPEN_ROUTER_API_KEY,
-            'HTTP-Referer': process.env.YOUR_SITE_URL, // Optional. Site URL for rankings on openrouter.ai.
-            'X-OpenRouter-Title': process.env.YOUR_SITE_NAME, // Optional. Site title for rankings on openrouter.ai.
+            'HTTP-Referer': process.env.YOUR_SITE_URL,
+            'X-OpenRouter-Title': process.env.YOUR_SITE_NAME,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -30,7 +30,5 @@ export const generateResponse = async (prompt) => {
     }
 
     const data = await res.json();
-    // return data.choices[0].message.content;
     return data.choices[0].message.content
-
 }
