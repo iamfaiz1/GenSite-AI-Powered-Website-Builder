@@ -1,4 +1,4 @@
-import {generateResponse} from "../APIs/openRouter.js"
+import { generateResponse } from "../APIs/openRouter.js"
 import Website from "../models/website.model.js";
 import User from "../models/user.model.js";
 import extractJson from "../utils/extractJson.js";
@@ -22,8 +22,8 @@ export const generateWebsite = async (req, res) => {
     }
 
     // Credits
-    if(user.credits <5){
-      return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })  
+    if (user.credits < 5) {
+      return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })
     }
 
 
@@ -31,29 +31,29 @@ export const generateWebsite = async (req, res) => {
 
     let raw = ""
     let parsed = null
-    for(let i = 0; i < 2 && !parsed; i++) {
+    for (let i = 0; i < 2 && !parsed; i++) {
       raw = await generateResponse(finalPrompt);
       parsed = await extractJson(raw);
-      
+
       if (!parsed) {
-        raw = await generateResponse(finalPrompt+"\n\nRETURN ONLY RAW JSON.");
+        raw = await generateResponse(finalPrompt + "\n\nRETURN ONLY RAW JSON.");
         parsed = await extractJson(raw);
       }
     }
-    if(!parsed.code){
-    // //console.log("ai returned invalid response", raw)
-    return res.status(400).json({ message: "AI returned invalid response" })
+    if (!parsed.code) {
+      // //console.log("ai returned invalid response", raw)
+      return res.status(400).json({ message: "AI returned invalid response" })
     }
-    
+
     // Generate a unique slug
     const slug = `${prompt.slice(0, 30).toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-    
+
     const website = await Website.create({
-      user:user._id,
+      user: user._id,
       title: prompt.slice(0, 50),
       slug: slug,
-      latestCode:parsed.code,
-      conversation:[
+      latestCode: parsed.code,
+      conversation: [
         {
           role: 'user',
           content: prompt,
@@ -79,25 +79,25 @@ export const generateWebsite = async (req, res) => {
 }
 
 
-export const getWebsiteById = async (req, res)=>{
-  try{
+export const getWebsiteById = async (req, res) => {
+  try {
     const website = await Website.findOne({
       _id: req.params.id,
       user: req.user._id
     })
-    if (!website){
+    if (!website) {
       return res.status(400).json({ message: "Website not found" })
     }
     return res.status(200).json(website)
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: `GetWebsiteById Error: ${error}` })
   }
 }
 
 
 // changes to existing website
-export const changes =async (req, res)=>{
-  try{
+export const changes = async (req, res) => {
+  try {
     const { prompt } = req.body
     if (!prompt) {
       return res.status(400).json({ message: "Prompt is required" })
@@ -106,7 +106,7 @@ export const changes =async (req, res)=>{
       _id: req.params.id,
       user: req.user._id
     })
-    if (!website){
+    if (!website) {
       return res.status(400).json({ message: "Website not found" })
     }
 
@@ -117,8 +117,8 @@ export const changes =async (req, res)=>{
     }
 
     // Credits
-    if(user.credits < 2){
-      return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })  
+    if (user.credits < 2) {
+      return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })
     }
 
     const updatePrompt = `
@@ -138,23 +138,23 @@ export const changes =async (req, res)=>{
     `
     let raw = ""
     let parsed = null
-    for(let i = 0; i < 2 && !parsed; i++) {
+    for (let i = 0; i < 2 && !parsed; i++) {
       raw = await generateResponse(updatePrompt);
       parsed = await extractJson(raw);
-      
+
       if (!parsed) {
-        raw = await generateResponse(updatePrompt +"\n\nRETURN ONLY RAW JSON.");
+        raw = await generateResponse(updatePrompt + "\n\nRETURN ONLY RAW JSON.");
         parsed = await extractJson(raw);
       }
     }
-    if(!parsed.code){
-    // console.log("ai returned invalid response", raw)
-    return res.status(400).json({ message: "AI returned invalid response" })
+    if (!parsed.code) {
+      // console.log("ai returned invalid response", raw)
+      return res.status(400).json({ message: "AI returned invalid response" })
     }
 
     website.conversation.push(
-      {role: 'user', content: prompt},
-      {role: 'ai', content: parsed.message}
+      { role: 'user', content: prompt },
+      { role: 'ai', content: parsed.message }
     )
     website.latestCode = parsed.code;
     await website.save();
@@ -167,31 +167,31 @@ export const changes =async (req, res)=>{
 
     })
 
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: `Change website Error: ${error}` })
   }
 }
 
-export const getAll = async (req, res)=>{
-  try{
-    const websites = await Website.find({user: req.user._id})
+export const getAll = async (req, res) => {
+  try {
+    const websites = await Website.find({ user: req.user._id })
     return res.status(200).json(websites)
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: `Get All Websites Error: ${error}` })
   }
 }
 
 
-export const deploy = async (req, res)=>{
-  try{
+export const deploy = async (req, res) => {
+  try {
     const website = await Website.findOne({
       _id: req.params.id,
       user: req.user._id
     })
-    if (!website){
+    if (!website) {
       return res.status(400).json({ message: "Website not found" })
     }
-    if(!website.slug){
+    if (!website.slug) {
       website.slug = website.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 60) + website._id.toString().slice(-5);
     }
 
@@ -201,23 +201,166 @@ export const deploy = async (req, res)=>{
     return res.status(200).json({
       url: website.deployUrl
     })
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: `Deploy Website Error: ${error}` })
   }
 }
 
 
-export const getWebsiteBySlug = async (req, res)=>{
-  try{
+export const getWebsiteBySlug = async (req, res) => {
+  try {
     const website = await Website.findOne({
       slug: req.params.slug,
       user: req.user?._id
     })
-    if (!website){
+    if (!website) {
       return res.status(400).json({ message: "Website not found" })
     }
     return res.status(200).json(website)
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: `GetWebsiteBySlug Error: ${error}` })
+  }
+}
+
+
+// is website publically available?
+export const makePublic = async (req, res) => {
+  try {
+    const website = await Website.findOneAndUpdate({
+      _id: req.params.id,
+      user: req.user._id
+    },
+      {
+        isPublic: true
+      }
+    );
+
+    if (!website) {
+      return res.status(404).json({ message: "Website not found" });
+    }
+
+    return res.status(200).json({
+      message: "Website made public successfully"
+    })
+
+  } catch (error) {
+    return res.status(500).json({ message: `IsPublic Error: ${error}` });
+  }
+}
+export const makePrivate = async (req, res) => {
+  try {
+    const website = await Website.findOneAndUpdate({
+      _id: req.params.id,
+      user: req.user._id
+    },
+      {
+        isPublic: false
+      }
+    );
+
+    if (!website) {
+      return res.status(404).json({ message: "Website not found" });
+    }
+
+    return res.status(200).json({
+      message: "Website made Private successfully"
+    })
+
+  } catch (error) {
+    return res.status(500).json({ message: `isPrivate Error: ${error}` });
+  }
+}
+
+
+// move to website Trash
+export const moveToTrash = async (req, res) => {
+  try {
+    const website = await Website.findOneAndUpdate({
+      _id: req.params.id,
+      user: req.user._id
+    },
+      {
+        deleted: true
+      }
+    );
+
+    if (!website) {
+      return res.status(404).json({ message: "Website not found to move to bin" })
+    }
+
+    if (website?.deleted) return res.status(400).json({ message: "Website already in bin" })
+
+    return res.status(204).json({ message: "Website moved to Website bin successfully" })
+
+  } catch (error) {
+    // console.log(error.message);
+    return res.status(500).json({ message: `TempDelete Error: ${error}` });
+  }
+}
+
+// restore from website Trash
+export const websiteRestore = async (req, res) => {
+  try {
+    const website = await Website.findOneAndUpdate({
+      _id: req.params.id,
+      user: req.user._id
+    },
+      {
+        deleted: false
+      }
+    );
+
+    if (!website) {
+      return res.status(404).json({ message: "Website not found to move to bin" })
+    }
+    if (!website?.deleted) return res.status(400).json({ message: "Website not Found in bin, Did You already restored it or Permanently Deleted it?" });
+
+    return res.status(204).json({ message: "Website restored successfully" })
+
+  } catch (error) {
+    // console.log(error.message);
+    return res.status(500).json({ message: `Website Restore Error: ${error}` });
+  }
+}
+
+
+// permament delete
+export const deleteWebsiteById = async (req, res) => {
+  try {
+    const website = await Website.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id
+    });
+
+    if (!website) {
+      return res.status(404).json({ message: "Website not found" })
+    }
+    return res.status(204).json({ message: "Website deleted successfully" })
+  } catch (error) {
+    return res.status(500).json({ message: `DeleteWebsiteById Error: ${error}` })
+  }
+}
+
+export const getAllInTrash = async (req, res) => {
+  try {
+    const websites = await Website.find({
+      user: req.user._id,
+      deleted: true
+    })
+    return res.status(200).json(websites)
+  } catch (error) {
+    return res.status(500).json({ message: `Get All Websites Error: ${error}` })
+  }
+}
+
+export const permanentDeleteAll = async(req, res)=> {
+  try{
+    const websites = await Website.deleteMany({
+      deleted: true,
+      user: req.user._id
+    })
+    return res.status(200).json(websites);
+  }catch(error){
+    return res.status(500).json({ message: `Permanent Delete All Error: ${error}` })
   }
 }

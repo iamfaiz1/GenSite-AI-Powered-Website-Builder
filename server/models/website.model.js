@@ -47,6 +47,19 @@ const websiteSchema = new mongoose.Schema({
         type:String,
         unique:true,
         sparse: true,
+    },
+    // new fields
+    isPublic:{
+        type:Boolean,
+        default:false
+    },
+    deleted:{
+        type:Boolean,
+        default:false
+    },
+    deletedAt:{
+        type:Date,
+        default: null
     }
 
 }, {timestamps:true});

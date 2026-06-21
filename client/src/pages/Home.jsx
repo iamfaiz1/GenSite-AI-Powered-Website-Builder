@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import LoginModel from '../components/LoginModel'
 import { useSelector } from 'react-redux'
-import { Coins } from 'lucide-react'
+import { Coins, Trash } from 'lucide-react'
 import axios from 'axios'
 import serverUrl from '../config/config.js';
 import { setUserData } from '../redux/userSlice'
@@ -76,6 +76,15 @@ function Home() {
                             <span className='text-zinc-300'>Credits</span>
                             <span>{userData.credits}</span>
                             <span className='font-semibold'>+</span>
+                        </div>
+                        }
+                        {userData && 
+                        <div 
+                        onClick={() => navigate('/trash')}
+                        className=' hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm cursor-pointer hover:bg-white/10  transition'>
+                            <Trash className='text-red-400 ' size={18}/>
+                            <span className='text-zinc-300 ' >Trash</span>
+                            
                         </div>
                         }
 

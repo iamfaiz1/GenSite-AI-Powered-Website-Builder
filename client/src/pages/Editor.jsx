@@ -92,8 +92,9 @@ function WebsiteEditor() {
                 } else {
                     setWebsite(result.data);
                 }
+                // console.log(result.data);
             } catch (error) {
-                console.log("Error getting website:", error.response?.data || error.message);
+                // console.log("Error getting website:", error.response?.data || error.message);
                 setError(error.response?.data?.message || error.message || "An error occurred.");
             }
         }
