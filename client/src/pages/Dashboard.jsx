@@ -1,12 +1,12 @@
 import React from 'react'
-import { ArrowLeft, Delete, Globe, Lock } from 'lucide-react'
+import { ArrowLeft, Trash, Globe, Lock, Rocket, ArrowRight, Share2, Check  } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance'
 import serverUrl from '../config/config.js';
 import { useState, useEffect } from 'react'
-import { Rocket, ArrowRight, Share2, Check } from 'lucide-react'
+
 
 
 
@@ -209,65 +209,69 @@ function Dashboard() {
                         })}
                       </p>
 
-                      {/* deploy button on cards */}
-                      {!w.deployed ? (
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          className='mt-4 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-0 py-2'
-                          onClick={() => handleDeploy(w._id)}
-                        >
-                          <Rocket size={18} /> Deploy
-                        </motion.button>
-                      ) :
-                        // copy button if already deployed
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleCopy(w)}
-                          className={`mt-4 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold rounded-3xl px-0 py-2
+                      {/* buttons container starts */}
+                      <div className="flex items-center justify-between gap-2">
+                        {/* deploy button on cards */}
+                        {!w.deployed ? (
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            className='mt-4 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-linear-to-r from-indigo-500 to-purple-500 rounded-3xl px-0 py-2'
+                            onClick={() => handleDeploy(w._id)}
+                          >
+                            <Rocket size={18} /> Deploy
+                          </motion.button>
+                        ) :
+                          // copy button if already deployed
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleCopy(w)}
+                            className={`mt-4 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold rounded-3xl px-0 py-2
                       ${copied
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                              : 'bg-white/10 hover:bg-white/20 border border-white/10'}
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-white/10 hover:bg-white/20 border border-white/10'}
                       `}
-                        >
-                          {copied ?
-                            <>
-                              Copied! <Check size={18} />
-                            </>
-                            :
-                            <>
-                              Copy Link <Share2 size={18} />
-                            </>
-                          }
-                        </motion.button>
-                      }
+                          >
+                            {copied ?
+                              <>
+                                Copied! <Check size={18} />
+                              </>
+                              :
+                              <>
+                                Copy Link <Share2 size={18} />
+                              </>
+                            }
+                          </motion.button>
+                        }
 
-                      {/* delete button */}
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleTempDelete(w._id)}
-                        className="mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-red-600 hover:bg-red-700 text-white rounded-3xl px-0 py-2 border border-red-700"
-                      >
-                        Delete <Delete size={18} />
-                      </motion.button>
-
-                      {/* Public and private button */}
-                      {w.public ? (
+                        {/* delete button */}
                         <motion.button
                           whileTap={{ scale: 0.95 }}
-                          className='mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-white/10 hover:bg-white/20 rounded-3xl px-0 py-2 border border-white/10'
-                          onClick={() => handleMakePrivate(w._id)}
+                          onClick={() => handleTempDelete(w._id)}
+                          className="mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-red-600 hover:bg-red-700 text-white rounded-3xl px-0 py-2 border border-red-700"
                         >
-                          <Lock size={18} /> Make Private
+                          Delete <Trash size={18} />
                         </motion.button>
-                      ) :
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleMakePublic(w._id)}
-                          className='mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-emerald-600 text-white rounded-3xl px-0 py-2 border border-emerald-500/30'
-                        >
-                          <Globe size={18} /> Make Public
-                        </motion.button>
-                      }
+
+                        {/* Public and private button */}
+                        {w.public ? (
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            className='mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-white/10 hover:bg-white/20 rounded-3xl px-0 py-2 border border-white/10'
+                            onClick={() => handleMakePrivate(w._id)}
+                          >
+                            <Lock size={18} /> Make Private
+                          </motion.button>
+                        ) :
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleMakePublic(w._id)}
+                            className='mt-2 flex w-full justify-center items-center gap-2 transition hover:scale-105 text-sm font-semibold bg-emerald-600 text-white rounded-3xl px-0 py-2 border border-emerald-500/30'
+                          >
+                            <Globe size={18} /> Make Public
+                          </motion.button>
+                        }
+                      {/* buttons container end  */}
+                      </div>
                     </div>
                   </motion.div>
                 )
@@ -276,7 +280,7 @@ function Dashboard() {
           </div>
         )}
 
-      {/* end */}
+        {/* end */}
       </div>
     </div>
   )

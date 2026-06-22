@@ -174,7 +174,10 @@ export const changes = async (req, res) => {
 
 export const getAll = async (req, res) => {
   try {
-    const websites = await Website.find({ user: req.user._id })
+    const websites = await Website.find({ 
+      user: req.user._id,
+      deleted: false
+     })
     return res.status(200).json(websites)
   } catch (error) {
     return res.status(500).json({ message: `Get All Websites Error: ${error}` })
