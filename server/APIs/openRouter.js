@@ -2,7 +2,7 @@ const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions'
 
 const model = "openai/gpt-oss-120b:free"
 
-export const generateResponse = async (prompt) => {
+export const openAiGptOSSFree = async (prompt) => {
     const res = await fetch(openRouterUrl, {
         method: 'POST',
         headers: {

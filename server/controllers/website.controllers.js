@@ -1,4 +1,4 @@
-import { generateResponse } from "../APIs/openRouter.js"
+import generateResponse from "../APIs/generateResponse.js";
 import Website from "../models/website.model.js";
 import User from "../models/user.model.js";
 import extractJson from "../utils/extractJson.js";
