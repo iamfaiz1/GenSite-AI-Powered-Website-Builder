@@ -1,5 +1,5 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 dotenv.config();
 
 import connectDb from './config/db.js';
@@ -19,7 +19,10 @@ const port = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, 'http://localhost:5173'], // allow requests from the frontend URL and localhost:5173
+    origin: [
+        'http://localhost:5173', 
+        process.env.FRONTEND_URL
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
 }))
@@ -38,6 +41,6 @@ app.get('/', (req, res)=>{
 
 // Listening......
 app.listen(port, () =>{
-    // console.log(`Server is running on: frontend: ${process.env.FRONTEND_URL} backend: https://gensite-ai-powered-website-builder.onrender.com`);
+    console.log(`Server is running on port: ${port}`);
     connectDb();
 } )

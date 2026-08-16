@@ -13,7 +13,8 @@ import {
     websiteRestore,
     moveToTrash,
     getAllInTrash,
-    permanentDeleteAll
+    permanentDeleteAll,
+    getPublicWebsites
 } from '../controllers/website.controllers.js';
 
 
@@ -23,10 +24,11 @@ const websiteRouter = express.Router();
 websiteRouter.post('/generate', isAuth, generateWebsite);
 websiteRouter.put(`/update/:id`, isAuth, changes);
 websiteRouter.get(`/getById/:id`, isAuth, getWebsiteById);
-websiteRouter.get(`/getBySlug/:slug`, isAuth, getWebsiteBySlug);
+websiteRouter.get(`/getBySlug/:slug`, getWebsiteBySlug);
 websiteRouter.get(`/getAll`, isAuth, getAll);
 websiteRouter.get(`/getAllInTrash`, isAuth, getAllInTrash);
 websiteRouter.get(`/deploy/:id`, isAuth, deploy);
+websiteRouter.get(`/public`, getPublicWebsites);
 
 websiteRouter.patch(`/make/:id/private`, isAuth, makePrivate);
 websiteRouter.patch(`/make/:id/public`, isAuth, makePublic);
