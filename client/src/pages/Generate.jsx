@@ -16,6 +16,14 @@ function Generate() {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [error, setError] = useState("");
   const [generationsRemaining, setGenerationsRemaining] = useState(5);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  const formatCooldown = (seconds) => {
+    const safeSeconds = Math.max(0, Number(seconds) || 0);
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainingSeconds = safeSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  };
   
   // Initialize generations remaining from user data
   useEffect(() => {
@@ -24,6 +32,24 @@ function Generate() {
       setGenerationsRemaining(remaining);
     }
   }, [userData]);
+
+  useEffect(() => {
+    if (!userData?.lastGenerationTime) {
+      setCooldownSeconds(0);
+      return;
+    }
+
+    const updateCooldown = () => {
+      const lastGenerationTime = new Date(userData.lastGenerationTime).getTime();
+      const elapsedMs = Date.now() - lastGenerationTime;
+      const remainingSeconds = Math.ceil((120000 - elapsedMs) / 1000);
+      setCooldownSeconds(remainingSeconds > 0 ? remainingSeconds : 0);
+    };
+
+    updateCooldown();
+    const interval = setInterval(updateCooldown, 1000);
+    return () => clearInterval(interval);
+  }, [userData?.lastGenerationTime]);
   
   const getAuthHeaders = () => {
     const token = localStorage.getItem('authToken');
@@ -41,6 +67,8 @@ function Generate() {
     ]
 
   const handleGenerateWebsite = async () => {
+    if (cooldownSeconds > 0 || loading) return;
+
     setLoading(true);
     setError("");
     try {
@@ -59,6 +87,9 @@ function Generate() {
       navigate(`/editor/${result.data.websiteId}`);
     } catch (error) {
       console.log("Error generating website:", error);
+      if (error.response?.status === 429 && error.response?.data?.remainingSeconds) {
+        setCooldownSeconds(error.response.data.remainingSeconds);
+      }
       setError(error.response?.data?.message || "An error occurred while generating the website.");
       setLoading(false);
     }
@@ -170,18 +201,18 @@ function Generate() {
                 )}
                 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: cooldownSeconds > 0 || loading || !prompt.trim() ? 1 : 1.02 }}
+                  whileTap={{ scale: cooldownSeconds > 0 || loading || !prompt.trim() ? 1 : 0.98 }}
                   onClick={handleGenerateWebsite}
-                  disabled={loading || !prompt.trim()}
-                  className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold bg-white text-black shadow-lg shadow-white/10 ml-auto ${(prompt.trim() || !loading) ? 
-                    "bg-white text-black hover:bg-white/90" :
-                    "bg-white/30 text-white/50 cursor-not-allowed"
+                  disabled={loading || !prompt.trim() || cooldownSeconds > 0}
+                  className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold shadow-lg shadow-white/10 ml-auto ${
+                    cooldownSeconds > 0 || loading || !prompt.trim()
+                      ? "bg-white/30 text-white/50 cursor-not-allowed"
+                      : "bg-white text-black hover:bg-white/90"
                   }`}
-                  
                 >
                   <Sparkles size={18} />
-                  Generate Website
+                  {cooldownSeconds > 0 ? `Generate in ${formatCooldown(cooldownSeconds)}` : "Generate Website"}
                 </motion.button>
               </div>
             </div>

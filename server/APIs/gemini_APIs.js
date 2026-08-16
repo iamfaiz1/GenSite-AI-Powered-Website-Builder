@@ -12,10 +12,46 @@ const GEMINI_MODELS = [
     "gemini-3.1-flash-lite",
 ];
 
+// Model -> timestamp until which it should be skipped
+const modelCooldowns = new Map();
+const COOLDOWN_MS = 5* 60* 60 * 1000; // 5 hours
+
+
+const isOnCooldown = (model) => {
+    const cooldownUntil = modelCooldowns.get(model);
+    if (!cooldownUntil) {
+        return false;
+    }
+
+    // Cooldown expired
+    if (Date.now() >= cooldownUntil) {
+        modelCooldowns.delete(model);
+        return false;
+    }
+
+    return true;
+};
+
+
+const putOnCooldown = (model) => {
+    const cooldownUntil = Date.now() + COOLDOWN_MS;
+    modelCooldowns.set(model, cooldownUntil);
+    console.log(
+        `${model} is on cooldown for ${COOLDOWN_MS / 1000}s`
+    );
+};
+
+
 const generateWithGemini = async (prompt) => {
     let lastError = null;
-    
     for (const model of GEMINI_MODELS) {
+
+        // Skip temporarily unavailable models
+        if (isOnCooldown(model)) {
+            console.log(`Skipping ${model} - currently on cooldown`);
+            continue;
+        }
+
         try {
             console.log(`Trying ${model}...`);
             const response = await ai.models.generateContent({
@@ -46,8 +82,23 @@ const generateWithGemini = async (prompt) => {
                 message.includes("503") ||
                 message.includes("unavailable");
 
-            if (quotaError || temporaryError) {
-                console.log(`Falling back from ${model}...`);
+            // Temporary Google service problem
+            if (temporaryError) {
+                putOnCooldown(model);
+
+                console.log(
+                    `Falling back from ${model} because it is unavailable...`
+                );
+
+                continue;
+            }
+
+            // Quota/rate-limit problem
+            if (quotaError) {
+                console.log(
+                    `Falling back from ${model} because of quota/rate limit...`
+                );
+
                 continue;
             }
 
