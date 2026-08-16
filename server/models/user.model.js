@@ -23,6 +23,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'free'
     },
+    // Rate Limiting Fields
+    lastGenerationTime:{
+        type: Date,
+        default: null
+    },
+    generationsToday:{
+        type: Number,
+        default: 0
+    },
+    lastResetDate:{
+        type: Date,
+        default: null
+    },
 
 }, {timestamps: true});
 
