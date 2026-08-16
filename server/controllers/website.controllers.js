@@ -213,13 +213,22 @@ export const deploy = async (req, res) => {
 export const getWebsiteBySlug = async (req, res) => {
   try {
     const website = await Website.findOne({
-      slug: req.params.slug,
-      user: req.user?._id
+      slug: req.params.slug
     })
     if (!website) {
       return res.status(400).json({ message: "Website not found" })
     }
-    return res.status(200).json(website)
+
+    if (website.isPublic) {
+      return res.status(200).json(website)
+    }
+
+    // allow owner (authenticated) to access their private site
+    if (req.user && website.user && website.user._id.toString() === req.user._id.toString()) {
+      return res.status(200).json(website)
+    }
+
+    return res.status(401).json({ message: "Unauthorized to access this website" })
   } catch (error) {
     return res.status(500).json({ message: `GetWebsiteBySlug Error: ${error}` })
   }
@@ -367,3 +376,22 @@ export const permanentDeleteAll = async(req, res)=> {
     return res.status(500).json({ message: `Permanent Delete All Error: ${error}` })
   }
 }
+
+
+// fetch public website by slug without authentication
+export const getPublicWebsites = async (req, res) => {
+  try{
+    const websites = await Website.find({ isPublic: true })
+      .populate('user', 'name avatar')
+      .sort({ createdAt: -1 });
+
+    if (!websites || websites.length === 0) {
+      return res.status(404).json({ message: "Currently there're no public Websites available." })
+    }
+
+    return res.status(200).json(websites);
+
+  }catch(error){
+    return res.status(500).json({ message: `Get Public Website By Slug Error: ${error}` })
+  }
+};
