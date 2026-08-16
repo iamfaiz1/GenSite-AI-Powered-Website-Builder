@@ -4,15 +4,27 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import serverUrl from '../config/config.js';
 
 function Generate() {
   const navigate = useNavigate();
+  const userData = useSelector(state => state.user.userData);
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [error, setError] = useState("");
+  const [generationsRemaining, setGenerationsRemaining] = useState(5);
+  
+  // Initialize generations remaining from user data
+  useEffect(() => {
+    if (userData?.generationsToday !== undefined) {
+      const remaining = Math.max(0, 5 - userData.generationsToday);
+      setGenerationsRemaining(remaining);
+    }
+  }, [userData]);
+  
   const getAuthHeaders = () => {
     const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -30,6 +42,7 @@ function Generate() {
 
   const handleGenerateWebsite = async () => {
     setLoading(true);
+    setError("");
     try {
       const result = await axios.post(
         `${serverUrl}/api/website/generate`,
@@ -40,6 +53,7 @@ function Generate() {
         }
       );
       // //console.log(result.data);
+      setGenerationsRemaining(result.data.generationsRemaining || 5);
       setProgress(100);
       setLoading(false);
       navigate(`/editor/${result.data.websiteId}`);
@@ -145,13 +159,14 @@ function Generate() {
               
               {/* Bottom bar holding the button */}
               <div className="absolute bottom-0 left-0 w-full p-4 flex items-center justify-between bg-gradient-to-t from-[#121212] via-[#121212] to-transparent pt-12">
-                <span className="text-xs text-zinc-500 font-medium px-4 hidden sm:block">
-                  Be as detailed as possible
-                </span>
+                <div className="text-xs text-zinc-500 font-medium px-4 hidden sm:flex flex-col gap-1">
+                  <span>Be as detailed as possible</span>
+                  <span className="text-blue-400">Generations remaining today: {generationsRemaining}/5</span>
+                </div>
                 
                 {/* error display */}
                 {error && (
-                  <p className="text-red-500 text-sm">{error}</p>
+                  <p className="text-red-500 text-sm max-w-sm">{error}</p>
                 )}
                 
                 <motion.button

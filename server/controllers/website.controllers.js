@@ -26,6 +26,39 @@ export const generateWebsite = async (req, res) => {
       return res.status(400).json({ message: "You dont have enough credits. Please buy more credits." })
     }
 
+    // Rate Limiting - Check 2 minute cooldown
+    const now = new Date();
+    if (user.lastGenerationTime) {
+      const timeDiffInMinutes = (now - user.lastGenerationTime) / (1000 * 60);
+      if (timeDiffInMinutes < 2) {
+        const remainingSeconds = Math.ceil((2 - timeDiffInMinutes) * 60);
+        return res.status(429).json({ 
+          message: `You can generate a website every 2 minutes. Please wait ${remainingSeconds} seconds.`,
+          remainingSeconds
+        })
+      }
+    }
+
+    // Rate Limiting - Check daily limit (5 websites per day)
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const lastReset = user.lastResetDate ? new Date(user.lastResetDate) : null;
+    
+    // Reset counter if it's a new day
+    if (!lastReset || lastReset < todayStart) {
+      user.generationsToday = 0;
+      user.lastResetDate = now;
+    }
+
+    if (user.generationsToday >= 5) {
+      const tomorrow = new Date(todayStart);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const hoursUntilReset = Math.ceil((tomorrow - now) / (1000 * 60 * 60));
+      return res.status(429).json({ 
+        message: `You have reached your daily limit of 5 websites. Try again tomorrow.`,
+        generationsToday: user.generationsToday,
+        hoursUntilReset
+      })
+    }
 
     const finalPrompt = masterPrompt.replace('USER_PROMPT', prompt)
 
@@ -66,10 +99,14 @@ export const generateWebsite = async (req, res) => {
 
     })
     user.credits -= 5;
+    user.lastGenerationTime = new Date();
+    user.generationsToday += 1;
     await user.save();
     return res.status(200).json({
       websiteId: website._id,
       remainingCredits: user.credits,
+      generationsToday: user.generationsToday,
+      generationsRemaining: 5 - user.generationsToday,
 
     })
 

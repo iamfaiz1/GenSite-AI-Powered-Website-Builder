@@ -1,28 +1,28 @@
-import { openAiGptOSSFree } from './openRouter.js'
-import { gemini31FlashLite } from './geminiflash3.1Lite.js'
+import generateWithGemini from "./gemini_APIs.js";
 
 const generateResponse = async (prompt) => {
+
     try {
-        console.log("Using Gemini")
-        return await gemini31FlashLite(prompt)
+        console.log("Starting Gemini fallback chain...");
+        return await generateWithGemini(prompt);
 
     } catch (geminiError) {
-        console.error("Gemini Failed: trying OpenRouter", geminiError)
+        console.error("All Gemini models failed:");
+        console.error(geminiError);
+
+        // Later you can put OpenRouter here
+        /*
         try {
-            console.log("Using OpenRouter")
-            return await openAiGptOSSFree(prompt)
-
+            return await openRouter(prompt);
         } catch (openRouterError) {
-            console.error(
-                "OpenRouter Failed:",
-                openRouterError
-            )
-
-            throw new Error(
-                "All AI providers are currently unavailable."
-            )
+            console.error(openRouterError);
         }
-    }
-}
+        */
 
-export default generateResponse
+        throw new Error(
+            "All AI providers are currently unavailable."
+        );
+    }
+};
+
+export default generateResponse;
